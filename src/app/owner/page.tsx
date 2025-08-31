@@ -6,6 +6,7 @@ import { supabaseBrowser } from "../../lib/supabaseClient";
 export default function OwnerPage() {
   const [userCount, setUserCount] = useState(0);
 
+  
   useEffect(() => {
     const fetchUsers = async () => {
       const { data, error } = await supabaseBrowser.from("customers").select("*");
