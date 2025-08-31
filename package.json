@@ -12,19 +12,23 @@
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "@supabase/supabase-js": "^2.43.4",
+    "@supabase/supabase-js": "^2.45.1",
     "dayjs": "^1.11.13",
     "zod": "^3.23.8",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.276.0",
-    "recharts": "^2.3.2"
+    "lucide-react": "^0.452.0",
+    "recharts": "^2.12.3",
+    "resend": "^3.0.0"
   },
   "devDependencies": {
-    "tailwindcss": "^4.4.7",
-    "postcss": "^8.4.35",
-    "autoprefixer": "^10.4.14",
+    "tailwindcss": "^3.4.7",
+    "postcss": "^8.4.38",
+    "autoprefixer": "^10.4.19",
     "typescript": "^5.5.4",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
