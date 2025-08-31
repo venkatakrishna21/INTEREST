@@ -1,33 +1,43 @@
-'use client';
+"use client";
 
+import { useState } from "react";
+import { supabaseBrowser } from "../../../lib/supabaseClient";
 
-import React, { useState } from 'react';
+export default function CustomerLoginPage() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
-import DebtChart from '../../components/DebtChart';
-import { supabase } from '../../lib/supabaseClient';
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-
-export default function OwnerLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [msg, setMsg] = useState('');
-
-  const onLogin = async () => {
-    setMsg('');
-    const { error } = await supabaseBrowser.auth.signInWithPassword({ email, password });
-    if (error) { setMsg(error.message); return; }
-    window.location.href = '/dashboard/owner';
+    const { error } = await supabaseBrowser.auth.signInWithOtp({ email });
+    if (error) {
+      setMessage("Login failed: " + error.message);
+    } else {
+      setMessage("Check your email for login link!");
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <div className="bg-white p-6 rounded-2xl shadow">
-        <h2 className="text-lg font-semibold mb-3">Owner Login</h2>
-        <input className="w-full border rounded p-2 mb-2" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
-        <input className="w-full border rounded p-2 mb-2" placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} />
-        <button className="w-full bg-slate-800 text-white p-2 rounded" onClick={onLogin}>Sign in</button>
-        {msg && <div className="text-sm text-red-600 mt-2">{msg}</div>}
-      </div>
+    <div className="p-6">
+      <h1 className="text-xl font-bold mb-4">Customer Login</h1>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border px-3 py-2 rounded w-full"
+          required
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Login
+        </button>
+      </form>
+      {message && <p className="mt-4">{message}</p>}
     </div>
   );
 }
