@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "../../supabase/auth-helpers-nextjs";
-import { Debt, Customer } from "../../types/database";
+import { createClientComponentClient } from "../lib/supabase/auth-helpers-nextjs";
+import { Debt, Customer } from "../types/database";
 
 export default function OwnerDashboard() {
   const supabaseBrowser = createClientComponentClient();
