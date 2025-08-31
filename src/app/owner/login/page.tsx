@@ -1,6 +1,11 @@
 'use client';
+
+
 import React, { useState } from 'react';
-import { supabaseBrowser } from '@/lib/supabaseClient';
+
+import DebtChart from '../../components/DebtChart';
+import { supabase } from '../../lib/supabaseClient';
+
 
 export default function OwnerLogin() {
   const [email, setEmail] = useState('');
