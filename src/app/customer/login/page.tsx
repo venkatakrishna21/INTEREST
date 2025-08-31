@@ -7,12 +7,18 @@ export default function CustomerLogin() {
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState('');
 
-  const onLogin = async () => {
-    setMsg('');
-    const { error } = await supabaseBrowser.auth.signInWithPassword({ email, password });
-    if (error) { setMsg(error.message); return; }
-    window.location.href = '/dashboard/customer';
-  };
+const onLogin = async () => {
+  setMsg('');
+  const { data, error } = await supabaseBrowser.signInWithPassword({
+    email,
+    password
+  });
+  if (error) {
+    setMsg(error.message);
+    return;
+  }
+  window.location.href = '/dashboard/customer';
+};
 
   return (
     <div className="max-w-md mx-auto">
