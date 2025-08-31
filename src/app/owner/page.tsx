@@ -1,100 +1,72 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "../lib/supabase/auth-helpers-nextjs";
-import { Debt, Customer } from "../types/database";
+import { supabaseBrowser } from "../../../lib/supabaseClient"; // relative path
+import type { Debt, Customer } from "../../../types/database"; // relative path
 
 export default function OwnerDashboard() {
-  const supabaseBrowser = createClientComponentClient();
-
   const [debts, setDebts] = useState<Debt[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [customersCount, setCustomersCount] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
-  const [avgInterest, setAvgInterest] = useState(0);
+  const [averageRate, setAverageRate] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch customers
-      const { data: c } = await supabaseBrowser
-        .from("customers")
-        .select("id, name, email");
+      // fetch customers
+      const { data: c } = await supabaseBrowser.from("customers").select("*");
       setCustomers(c || []);
       setCustomersCount(c?.length || 0);
 
-      // ✅ Fetch debts with "id"
+      // fetch debts
       const { data: d } = await supabaseBrowser
         .from("debts")
-        .select(
-          "id, principal, interest_rate, updated_at, customer_id, status"
-        );
+        .select("id, principal, interest_rate, updated_at, customer_id, status"); // include id
+
       setDebts(d || []);
 
-      // Calculate totals
+      // calculate totals
       let total = 0;
       let rateSum = 0;
       (d || []).forEach((x: any) => {
         total += Number(x.principal);
         rateSum += Number(x.interest_rate || 0);
       });
+
       setTotalDebt(total);
-      setAvgInterest((rateSum / (d?.length || 1)).toFixed(2) as any);
+      setAverageRate(d && d.length > 0 ? rateSum / d.length : 0);
     };
 
     fetchData();
-  }, [supabaseBrowser]);
+  }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">📊 Owner Dashboard</h1>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">📊 Owner Dashboard</h1>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="p-4 rounded-xl shadow bg-white">
-          <h2 className="text-gray-600">Total Customers</h2>
-          <p className="text-xl font-bold">{customersCount}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="p-4 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Customers</h2>
+          <p className="text-xl">{customersCount}</p>
         </div>
-        <div className="p-4 rounded-xl shadow bg-white">
-          <h2 className="text-gray-600">Total Debt</h2>
-          <p className="text-xl font-bold">₹{totalDebt}</p>
+
+        <div className="p-4 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Total Debt</h2>
+          <p className="text-xl">₹{totalDebt.toLocaleString()}</p>
         </div>
-        <div className="p-4 rounded-xl shadow bg-white">
-          <h2 className="text-gray-600">Avg. Interest Rate</h2>
-          <p className="text-xl font-bold">{avgInterest}%</p>
+
+        <div className="p-4 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Avg. Rate</h2>
+          <p className="text-xl">{averageRate.toFixed(2)}%</p>
+        </div>
+
+        <div className="p-4 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Active Debts</h2>
+          <p className="text-xl">
+            {debts.filter((d) => d.status === "active").length}
+          </p>
         </div>
       </div>
-
-      {/* Customers List */}
-      <h2 className="text-xl font-semibold mb-2">👥 Customers</h2>
-      <ul className="space-y-2 mb-6">
-        {customers.map((cust) => (
-          <li
-            key={cust.id}
-            className="p-3 bg-white rounded-xl shadow flex justify-between"
-          >
-            <span>{cust.name}</span>
-            <span className="text-gray-500">{cust.email}</span>
-          </li>
-        ))}
-      </ul>
-
-      {/* Debts List */}
-      <h2 className="text-xl font-semibold mb-2">💰 Debts</h2>
-      <ul className="space-y-2">
-        {debts.map((debt) => (
-          <li
-            key={debt.id}
-            className="p-3 bg-white rounded-xl shadow flex justify-between"
-          >
-            <span>
-              Customer ID: {debt.customer_id} | ₹{debt.principal}
-            </span>
-            <span className="text-gray-500">
-              {debt.interest_rate}% | {debt.status}
-            </span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
